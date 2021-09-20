@@ -1,0 +1,17 @@
+{
+    "name": "dipoengoro/gudang-base",
+    "description": "Aplikasi Gudang",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Dipoengoro\\GudangBase\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Muhammad Diponegoro",
+            "email": "dipoengoro@outlook.com"
+        }
+    ],
+    "require": {}
+}
