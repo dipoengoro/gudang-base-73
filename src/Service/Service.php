@@ -25,6 +25,7 @@ interface BarangService
         string $satuanBaru
     ): void;
     function transaksi(string $idBarang, float $jumlah_barang): void;
+    function exportToExcel(): void;
 }
 
 class BarangServiceImpl implements BarangService
@@ -105,5 +106,10 @@ class BarangServiceImpl implements BarangService
             $jumlah_barang_positif = $jumlah_barang * -1;
             $this->barangRepository->transactionKeluar($idBarang, $jumlah_barang_positif);
         }
+    }
+
+    function exportToExcel(): void
+    {
+        $this->barangRepository->exportExcel();
     }
 }

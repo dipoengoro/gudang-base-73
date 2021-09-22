@@ -28,6 +28,7 @@ class GudangView
             Input::banner("2. Edit Barang");
             Input::banner("3. Transaksi");
             Input::banner("4. Hapus Barang");
+            Input::banner("5. Export Excel");
             Input::banner("x. Keluar");
 
             $pilihan = Input::inputMenu("Pilih");
@@ -39,6 +40,8 @@ class GudangView
                 $this->transaksi();
             } elseif ($pilihan == "4") {
                 $this->removeBarang();
+            } else if ($pilihan == "5") {
+                $this->exportExcel();
             } else if ($pilihan == "x") {
                 Input::exit();
             } else {
@@ -217,5 +220,10 @@ class GudangView
                 break;
             }
         }
+    }
+
+    function exportExcel(): void 
+    {
+        $this->barangService->exportToExcel();
     }
 }

@@ -1,10 +1,13 @@
 <?php
 
 namespace Dipoengoro\GudangBase\Repository;
+require_once __DIR__ . "../../../vendor/autoload.php";
 
 use Dipoengoro\GudangBase\Entity\Barang;
 use PDO;
 use PDOException;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 interface BarangRepository
 {
@@ -29,6 +32,8 @@ interface BarangRepository
     function transactionKeluar(string $idBarang, float $jumlah_barang): void;
 
     function transactionMasuk(string $idBarang, float $jumlah_barang): void;
+
+    function exportExcel(): void;
 }
 
 class BarangRepositoryImpl implements BarangRepository
@@ -241,6 +246,37 @@ class BarangRepositoryImpl implements BarangRepository
             $this->connection->rollBack();
             die($e->getMessage());
         }
+    }
+
+    public function exportExcel(): void
+    {
+        // Create Spreadsheet + worksheet
+        $spreadsheet  = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle("Daftar Barang");
+
+        // Fetch data + write to spreadsheet
+        $sql = "SELECT * FROM barang";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute();
+        $i = 2;
+        $sheet->setCellValue('A1', "Id Barang");
+        $sheet->setCellValue('B1', "Nama Barang");
+        $sheet->setCellValue('C1', "Harga Satuan");
+        $sheet->setCellValue('D1', "Satuan Barang");
+        $sheet->setCellValue('E1', "Sisa Barang");
+        while ($row = $statement->fetch()) {
+            $sheet->setCellValue('A'.$i, $row['id_barang']);
+            $sheet->setCellValue('B'.$i, $row['nama_barang']);
+            $sheet->setCellValue('C'.$i, $row['harga_satuan']);
+            $sheet->setCellValue('D'.$i, $row['satuan_barang']);
+            $sheet->setCellValue('E'.$i, $row['sisa_barang']);
+            $i++;
+        }
+
+        // Save File
+        $writer = new Xlsx($spreadsheet);
+        $writer->save("test.xlsx");
     }
 
     public function __destruct()

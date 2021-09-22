@@ -13,5 +13,7 @@
             "email": "dipoengoro@outlook.com"
         }
     ],
-    "require": {}
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.18"
+    }
 }
