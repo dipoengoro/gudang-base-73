@@ -28,7 +28,7 @@ class GudangView
             Input::banner("2. Edit Barang");
             Input::banner("3. Transaksi");
             Input::banner("4. Hapus Barang");
-            Input::banner("5. Export Excel");
+            Input::banner("5. Export Data");
             Input::banner("x. Keluar");
 
             $pilihan = Input::inputMenu("Pilih");
@@ -224,6 +224,25 @@ class GudangView
 
     function exportExcel(): void 
     {
-        $this->barangService->exportToExcel();
+        $loop = true;
+        while ($loop) {
+            Input::titleBanner("Export Data");
+            Input::banner("1. Daftar Barang");
+            Input::banner("2. Daftar Transaksi");
+            Input::banner("x. Kembali");
+
+            $pilihan = Input::inputMenu("Pilih");
+            if ($pilihan == "1") {
+                $this->barangService->exportToExcel();
+                Input::banner("Berhasil Export");
+            } elseif ($pilihan == "2") {
+                Input::banner("Memilih Daftar Transaksi");
+            } else if ($pilihan == "x") {
+                $loop = false;
+            } else {
+                Input::banner("Pilihan tidak dimengerti");
+            }
+        }
+
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace Dipoengoro\GudangBase\Repository;
+
 require_once __DIR__ . "../../../vendor/autoload.php";
 
 use Dipoengoro\GudangBase\Entity\Barang;
@@ -250,6 +251,8 @@ class BarangRepositoryImpl implements BarangRepository
 
     public function exportExcel(): void
     {
+        date_default_timezone_set("Asia/Jakarta");
+        $currentDateTime = date("YmdHis");
         // Create Spreadsheet + worksheet
         $spreadsheet  = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -260,23 +263,23 @@ class BarangRepositoryImpl implements BarangRepository
         $statement = $this->connection->prepare($sql);
         $statement->execute();
         $i = 2;
-        $sheet->setCellValue('A1', "Id Barang");
-        $sheet->setCellValue('B1', "Nama Barang");
-        $sheet->setCellValue('C1', "Harga Satuan");
-        $sheet->setCellValue('D1', "Satuan Barang");
-        $sheet->setCellValue('E1', "Sisa Barang");
+        $sheet->setCellValue('A1', "Id Barang")
+            ->setCellValue('B1', "Nama Barang")
+            ->setCellValue('C1', "Harga Satuan")
+            ->setCellValue('D1', "Satuan Barang")
+            ->setCellValue('E1', "Sisa Barang");
         while ($row = $statement->fetch()) {
-            $sheet->setCellValue('A'.$i, $row['id_barang']);
-            $sheet->setCellValue('B'.$i, $row['nama_barang']);
-            $sheet->setCellValue('C'.$i, $row['harga_satuan']);
-            $sheet->setCellValue('D'.$i, $row['satuan_barang']);
-            $sheet->setCellValue('E'.$i, $row['sisa_barang']);
+            $sheet->setCellValue('A' . $i, $row['id_barang']);
+            $sheet->setCellValue('B' . $i, $row['nama_barang']);
+            $sheet->setCellValue('C' . $i, $row['harga_satuan']);
+            $sheet->setCellValue('D' . $i, $row['satuan_barang']);
+            $sheet->setCellValue('E' . $i, $row['sisa_barang']);
             $i++;
         }
 
         // Save File
         $writer = new Xlsx($spreadsheet);
-        $writer->save("test.xlsx");
+        $writer->save("Barang - " . $currentDateTime . ".xlsx");
     }
 
     public function __destruct()

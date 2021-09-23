@@ -48,11 +48,10 @@ function testMinus(string $s): int {
     return $input - 2;
 }
 
-echo testMinus(1);
-
-
-// try {
-//     testValidation("coba");
-// } catch(Exception $e) {
-//     Input::banner($e->getMessage());
-// }
+function testName() 
+{
+    date_default_timezone_set("Asia/Jakarta");
+    $currentDatetime = date("YmdHis");
+    return $currentDatetime;
+}
+echo testName();
