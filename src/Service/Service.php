@@ -25,7 +25,7 @@ interface BarangService
         string $satuanBaru
     ): void;
     function transaksi(string $idBarang, float $jumlah_barang): void;
-    function exportToExcel(): void;
+    function exportToExcel($from, $to): void;
 }
 
 class BarangServiceImpl implements BarangService
@@ -108,8 +108,19 @@ class BarangServiceImpl implements BarangService
         }
     }
 
-    function exportToExcel(): void
+    function exportToExcel($from, $to): void
     {
-        $this->barangRepository->exportExcel();
+        date_default_timezone_set("Asia/Jakarta");
+        if (is_null($from) and is_null($to)) {
+            $this->barangRepository->exportBarangToExcel();
+        }
+        // } else if (is_null($from) And !is_null($to)) {
+        //     $from = date('Y-m') . ' - 01';
+        //     $this->barangRepository->exportTransaksiToExcel($from, $to);
+        // } else if (!is_null($from) And is_null($to)) {
+        //     $to = date('Y-m-d');
+        //     $this->barangRepository->exportTransaksiToExcel($from, $to);
+        // } else {
+        $this->barangRepository->exportTransaksiToExcel($from, $to);
     }
 }

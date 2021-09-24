@@ -224,8 +224,7 @@ class GudangView
 
     function exportExcel(): void 
     {
-        $loop = true;
-        while ($loop) {
+        while (true) {
             Input::titleBanner("Export Data");
             Input::banner("1. Daftar Barang");
             Input::banner("2. Daftar Transaksi");
@@ -233,16 +232,67 @@ class GudangView
 
             $pilihan = Input::inputMenu("Pilih");
             if ($pilihan == "1") {
-                $this->barangService->exportToExcel();
+                $this->barangService->exportToExcel(null, null);
                 Input::banner("Berhasil Export");
             } elseif ($pilihan == "2") {
+                $this->exportTransaksi();
                 Input::banner("Memilih Daftar Transaksi");
             } else if ($pilihan == "x") {
-                $loop = false;
+                break;
             } else {
                 Input::banner("Pilihan tidak dimengerti");
             }
         }
+    }
 
+    function exportTransaksi(): void 
+    {   date_default_timezone_set("Asia/Jakarta");
+        Input::titleBanner("Export Daftar Transaksi");
+        Input::banner("Dari");
+        $dariTahun = Input::inputData("Tahun");
+        $dariBulan = Input::inputData("Bulan");
+        $dariTanggal = Input::inputData("Tanggal");
+        Input::banner("Sampai");
+        $sampaiTahun = Input::inputData("Tahun");
+        $sampaiBulan = Input::inputData("Bulan");
+        $sampaiTanggal = Input::inputData("Tanggal");
+
+        $currentDate = date('Y-m-d');
+        
+        if ($dariTahun == "") {
+            $dariTahun = substr($currentDate, 0, 4);
+        }
+        if ($dariBulan == "") {
+            $dariBulan = substr($currentDate, 5, 2);
+        }
+        if ($dariTanggal == "") {
+            $dariTanggal = '01';
+        }
+        if ($sampaiTahun == "") {
+            $sampaiTahun = substr($currentDate, 0, 4);
+        }
+        if ($sampaiBulan == "") {
+            $sampaiBulan = substr($currentDate, 5, 2);
+        }
+        if ($sampaiTanggal == "") {
+            $sampaiTanggal = substr($currentDate, 8, 2);
+        }
+
+        $from = "$dariTahun-$dariBulan-$dariTanggal";
+        $to = "$sampaiTahun-$sampaiBulan-$sampaiTanggal";
+
+        Input::titleBanner("Konfirmasi");
+        Input::banner("dari $from sampai $to");
+
+        while (true) {
+            $pilihan = Input::inputMenu("Jika sesuai ketik 'y', jika ingin batalkan ketik 'x'");
+            if ($pilihan == "x") {
+                Input::banner("Membatalkan update barang");
+                break;
+            } else if ($pilihan == "y") {
+                $this->barangService->exportToExcel($from, $to);
+                break;
+            }
+        }
     }
 }

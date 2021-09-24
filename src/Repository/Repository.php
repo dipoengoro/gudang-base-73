@@ -34,7 +34,9 @@ interface BarangRepository
 
     function transactionMasuk(string $idBarang, float $jumlah_barang): void;
 
-    function exportExcel(): void;
+    function exportBarangToExcel(): void;
+
+    function exportTransaksiToExcel($from, $to): void;
 }
 
 class BarangRepositoryImpl implements BarangRepository
@@ -249,7 +251,7 @@ class BarangRepositoryImpl implements BarangRepository
         }
     }
 
-    public function exportExcel(): void
+    public function exportBarangToExcel(): void
     {
         date_default_timezone_set("Asia/Jakarta");
         $currentDateTime = date("YmdHis");
@@ -280,6 +282,51 @@ class BarangRepositoryImpl implements BarangRepository
         // Save File
         $writer = new Xlsx($spreadsheet);
         $writer->save("Barang - " . $currentDateTime . ".xlsx");
+    }
+
+    public function exportTransaksiToExcel($from, $to): void
+    {
+        date_default_timezone_set("Asia/Jakarta");
+        $currentDateTime = date("YmdHis");
+        // Create Spreadsheet + worksheet
+        $spreadsheet  = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle("Daftar Transaksi");
+
+        // Fetch data + write to spreadsheet
+        $sql = 
+        "SELECT id_transaksi, id_barang, nama_barang,
+        transaksi_type, satuan_barang, jumlah_barang, 
+        DATE_FORMAT(tanggal_transaksi, '%Y-%m-%d') transaksi_tanggal
+        FROM transaksi WHERE DATE(tanggal_transaksi) 
+        BETWEEN :from AND :to";
+        $statement = $this->connection->prepare($sql);
+        $statement->execute([
+            ":from" => $from,
+            ":to" => $to
+        ]);
+        $i = 2;
+        $sheet->setCellValue('A1', "Id Transaksi")
+            ->setCellValue('B1', "Id Barang")
+            ->setCellValue('C1', "Nama Barang")
+            ->setCellValue('D1', "Tipe Transaksi")
+            ->setCellValue('E1', "Satuan Barang")
+            ->setCellValue('F1', "Jumlah Barang")
+            ->setCellValue('G1', "Tanggal Transaksi");
+        while ($row = $statement->fetch()) {
+            $sheet->setCellValue('A' . $i, $row['id_transaksi']);
+            $sheet->setCellValue('B' . $i, $row['id_barang']);
+            $sheet->setCellValue('C' . $i, $row['nama_barang']);
+            $sheet->setCellValue('D' . $i, $row['transaksi_type']);
+            $sheet->setCellValue('E' . $i, $row['satuan_barang']);
+            $sheet->setCellValue('F' . $i, $row['jumlah_barang']);
+            $sheet->setCellValue('G' . $i, $row['transaksi_tanggal']);
+            $i++;
+        }
+
+        // Save File
+        $writer = new Xlsx($spreadsheet);
+        $writer->save("Transaksi-$from-$to-" . $currentDateTime . ".xlsx");
     }
 
     public function __destruct()
